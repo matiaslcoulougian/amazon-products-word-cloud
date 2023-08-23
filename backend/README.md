@@ -43,13 +43,11 @@ This application uses several dependencies:
 - `axios` for making HTTP requests.
 - `bullmq` for managing job queues.
 - `cheerio` for web scraping.
-- `cors` for handling cross-origin resource sharing.
 - `dotenv` for managing environment variables.
 - `express` for the web server.
 - `express-sse-ts` for server-sent events.
 - `mongodb` and `mongoose` for the database.
-- `node-cache` for caching.
-- `stopword` and `wordcloud` for processing words.
+- `stopword` for processing and filtering words.
 
 Author: Matias Coulougian
 Date: 08/23/2023
