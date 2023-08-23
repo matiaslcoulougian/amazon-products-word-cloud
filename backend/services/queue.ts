@@ -18,15 +18,14 @@ const DEFAULT_REMOVE_CONFIG = {
     },
 };
 
-export const addProductProcessingToQueue = async (productUrl: string, size?: number): Promise<Job> => {
-    return productUrlsQueue.add('processJob', { productUrl, size }, DEFAULT_REMOVE_CONFIG);
+export const addProductProcessingToQueue = async (productUrl: string): Promise<Job> => {
+    return productUrlsQueue.add('processJob', { productUrl }, DEFAULT_REMOVE_CONFIG);
 }
 
 export const worker = new Worker(
     queueName,
     async (job: Job) => {
-        const frequencies = await buildProductDescriptionFrequencies(job.data);
-        return JSON.stringify(frequencies)
+        await buildProductDescriptionFrequencies(job.data.productUrl);
     },
     { connection }
 );

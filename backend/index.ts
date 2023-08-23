@@ -1,9 +1,10 @@
 import express, { Express, Request, Response } from 'express';
-import { buildWordCloudFrequencies } from "./coordinator/coordinator";
+import { processProductUrl } from "./coordinator/coordinator";
 import SSE from 'express-sse-ts';
 import cors from 'cors';
 import connectDb from "./services/db";
 import {worker} from "./services/queue";
+import { getWordFrequencies } from "./queries/getWordFrequencies";
 
 const app: Express = express();
 const sse = new SSE();
@@ -24,17 +25,25 @@ app.get('/stream', sse.init);
 // post sending it in the query param productUrl
 app.post('/', async (req: Request, res: Response) => {
     // get query param
-    const { productUrl, size } = req.query;
-    if (!productUrl) res.status(400).send('productUrl is required');
-    // call coordinator to build word cloud frequencies
-    await buildWordCloudFrequencies(productUrl as string, Number(size));
+    const productUrl = req.query.productUrl;
+    if (!productUrl) {
+        res.status(400).send('productUrl is required');
+    }
+    // call coordinator to process the productUrl (add to queue)
+    await processProductUrl(productUrl as string);
     res.status(200).send();
 });
 
+app.get('/frequencies', async (req: Request, res: Response) => {
+    const size = req.query.size;
+    const frequencies = await getWordFrequencies(Number(size));
+    res.status(200).send(JSON.stringify(frequencies));
+});
 
 app.listen(port, () => {
     console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
-    worker.on('completed', (job) => {
-        sse.send(job.returnvalue);
+    worker.on('completed', async () => {
+        // send update event to all clients
+        sse.send(JSON.stringify({ type: 'update'}));
     });
 });
