@@ -24,12 +24,10 @@ app.get('/stream', sse.init);
 // post sending it in the query param productUrl
 app.post('/', async (req: Request, res: Response) => {
     // get query param
-    const productUrl = req.query.productUrl;
-    if (!productUrl) {
-        res.status(400).send('productUrl is required');
-    }
+    const { productUrl, size } = req.query;
+    if (!productUrl) res.status(400).send('productUrl is required');
     // call coordinator to build word cloud frequencies
-    await buildWordCloudFrequencies(productUrl as string);
+    await buildWordCloudFrequencies(productUrl as string, Number(size));
     res.status(200).send();
 });
 

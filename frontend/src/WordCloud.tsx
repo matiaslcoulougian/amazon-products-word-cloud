@@ -20,6 +20,10 @@ export const WordCloudComponent: React.FC = () => {
             setData(newData);
         };
 
+        eventSource.onopen = () => {
+            console.log('Connection established');
+        }
+
         return () => eventSource.close();
     }, []);
 

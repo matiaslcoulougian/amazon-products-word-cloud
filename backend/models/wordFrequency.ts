@@ -7,7 +7,7 @@ export interface IWordFrequency extends Document {
 
 const WordFrequencySchema: Schema = new Schema({
     word: { type: String, required: true, unique: true },
-    frequency: { type: Number, default: 0 },
+    frequency: { type: Number, default: 0, index: true }, // index for sorting more efficiently
 });
 
 export default mongoose.model<IWordFrequency>('WordFrequency', WordFrequencySchema);
